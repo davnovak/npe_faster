@@ -9,4 +9,4 @@ Original GitHub repo:
 
 https://github.com/akonstodata/cytof_dimred
 
-Modified version written by David Novak (davidnovak@ugent.be)
+Modified version written by David Novak (david.novak@ugent.be)
