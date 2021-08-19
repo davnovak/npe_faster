@@ -51,6 +51,7 @@ library(som)
 library(topicmodels)
 library(distrEx)
 library(distr)
+library(emdist)
 
 ## Compute NPE using the original function and time it ----
 
