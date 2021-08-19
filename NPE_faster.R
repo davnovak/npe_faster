@@ -1,4 +1,6 @@
 
+# require: FNN, distr, distrEx, emdist
+
 .get_likeness_distributions <- function(
   coords, annot, knn, k, normalise
 ) {
@@ -33,12 +35,8 @@
 }
 
 npe <- function(
-  hd, ld, annot, knn = NULL, k = NULL, normalise = FALSE, exclude_pops = c(), metric = 'total_variance_distance', reduce = 'sum'
+  hd, ld, annot, knn = NULL, k = NULL, normalise = FALSE, exclude_pops = c(), metric = 'total_variation_distance', reduce = 'sum', plot_path = NULL
 ) {
-  require(FNN)
-  require(distr)
-  require(distrEx)
-  require(emdist)
   
   ## Prepare inputs ----
   annot <- as.factor(annot)
@@ -56,9 +54,9 @@ npe <- function(
   
   ## Resolve reduction function (whether to take sum or mean of dissimilarities between likeness distributions) ----
   reduce <- match.arg(arg = reduce, choices = c(
-    'sum', 'mean', 'average', 'avg'
+    'sum', 'mean', 'average', 'avg', 'none'
   ))
-  redf <- if (reduce == 'sum') sum else mean
+  redf <- if (reduce == 'sum') sum else if (reduce %in% c('mean', 'average', 'avg')) mean else if (reduce == 'none') function(x) x
   
   ## Compute distribution over the counts of like neighbours for each population ----
   dist_hd <- .get_likeness_distributions(hd, annot, knn, k, normalise) # in high dimension
@@ -68,6 +66,22 @@ npe <- function(
   exclude <- levels(annot) %in% exclude_pops
   dist_hd <- dist_hd[!exclude]
   dist_ld <- dist_ld[!exclude]
+  
+  ## Plot distributions per population ----
+  if (!is.null(plot_path)) {
+    if (tolower(substr(plot_path, nchar(plot_path) - 3, nchar(plot_path))) != '.pdf')
+      plot_path <- paste0(plot_path, '.pdf')
+    p <- par(no.readonly = TRUE)
+    pdf(file = plot_path, width = 3*nlevels(annot), height = 6)
+    par(mfrow = c(2, nlevels(annot)), mar = c(2, 2, 2, 2))
+    bounds <- sapply(levels(annot), function(pop) max(dist_hd[[pop]], dist_ld[[pop]]))
+    for (pop in levels(annot))
+      barplot(dist_hd[[pop]], ylim = c(0, bounds[pop]), col = 'darkblue', border = 'darkblue', main = pop)
+    for (pop in levels(annot))
+      barplot(dist_ld[[pop]], ylim = c(0, bounds[pop]), col = 'darkred', border = 'darkred', main = pop)
+    dev.off()
+    do.call(par, p)
+  }
   
   ## Change format of distributions to suit the selected distance function ----
   if (metric %in% c('total_variation_distance', 'tvd')) {
