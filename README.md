@@ -21,4 +21,5 @@ Modified version written by David Novak (david.novak@ugent.be)
 
 * In addition to the total variance distance, earth-mover's distance can be used to compute dissimilarities between the per-population distributions of counts of like cells.
 
+* For the final result, the per-population distribution dissimilarities can be reduced to a scalar output value either by summing *or* by taking the average.
 
