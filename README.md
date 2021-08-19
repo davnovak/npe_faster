@@ -1,4 +1,4 @@
-### Faster implementation of the Neighbourhood Proportion Error
+## Improved implementation of the Neighbourhood Proportion Error
 
 The original Neighbourhood Proportion Error (NPE) manuscript:
 
@@ -10,3 +10,15 @@ Original GitHub repo:
 https://github.com/akonstodata/cytof_dimred
 
 Modified version written by David Novak (david.novak@ugent.be)
+
+### Modifications
+
+* This version is faster due to extended use of built-in functions and vectorisation.
+
+* Pre-computed k-nearest-neighbour indices in high dimension can be passed as input.
+
+* Points can be excluded from the final result if they come from an 'unlabelled' psedo-population.
+
+* In addition to the total variance distance, earth-mover's distance can be used to compute dissimilarities between the per-population distributions of counts of like cells.
+
+

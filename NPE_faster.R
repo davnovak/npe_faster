@@ -27,24 +27,38 @@
   dist <- apply(dist, 2, function(x) x / sum(x))
   
   ## Convert to list of DiscreteDistribution objects ----
-  dist <- apply(dist, 2, function(x) distr::DiscreteDistribution(1:k, x))
+  dist <- split(dist, col(dist))
   names(dist) <- levels(annot)
   dist
 }
 
 npe <- function(
-  hd, ld, annot, knn = NULL, k = NULL, normalise = FALSE, exclude_pops = c()
+  hd, ld, annot, knn = NULL, k = NULL, normalise = FALSE, exclude_pops = c(), metric = 'total_variance_distance', reduce = 'sum'
 ) {
   require(FNN)
   require(distr)
   require(distrEx)
+  require(emdist)
   
+  ## Prepare inputs ----
   annot <- as.factor(annot)
   stopifnot(nrow(hd) == nrow(ld))
   stopifnot(!(is.null(knn) && is.null(k)))
   n <- nrow(hd)
   if (is.null(k))
     k <- ncol(knn)
+  
+  ## Resolve distance function between likeness distributions in HD and LD ----
+  metric <- match.arg(arg = metric, choices = c(
+    'total_variation_distance', 'tvd',
+    'earth_movers_distance', 'emd')
+  )
+  
+  ## Resolve reduction function (whether to take sum or mean of dissimilarities between likeness distributions) ----
+  reduce <- match.arg(arg = reduce, choices = c(
+    'sum', 'mean', 'average', 'avg'
+  ))
+  redf <- if (reduce == 'sum') sum else mean
   
   ## Compute distribution over the counts of like neighbours for each population ----
   dist_hd <- .get_likeness_distributions(hd, annot, knn, k, normalise) # in high dimension
@@ -55,9 +69,20 @@ npe <- function(
   dist_hd <- dist_hd[!exclude]
   dist_ld <- dist_ld[!exclude]
   
-  ## Compute the sum of total variation distances between distributions ----
-  vardist_by_pop <- mapply(distrEx::TotalVarDist, dist_hd, dist_ld)
-  sum(vardist_by_pop)
+  ## Change format of distributions to suit the selected distance function ----
+  if (metric %in% c('total_variation_distance', 'tvd')) {
+    format <- function(d) distr::DiscreteDistribution(1:k, d)
+    distf <- distrEx::TotalVarDist
+  } else if (metric %in% c('earth_movers_distance', 'emd')) {
+    format <- function(d) matrix(c(d, 1:k), ncol = 2)
+    distf <- emdist::emd
+  }
+  dist_hd <- lapply(dist_hd, format)
+  dist_ld <- lapply(dist_ld, format)
+  
+  ## Compute dissimilarities between likeness distributions and reduce ----
+  vardist_by_pop <- mapply(distf, dist_hd, dist_ld)
+  redf(vardist_by_pop)
 }
 
 

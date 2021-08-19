@@ -14,7 +14,6 @@ source('./NPE_faster.R')
 
 library(HDCytoData)
 library(uwot)
-library(scattermore) # optional
 
 ## Get 39-dimensional CyTOF dataset and preprocess it ----
 data <- Samusik_01_SE()
