@@ -70,8 +70,7 @@ t1 <- system.time(
     ld = proj,
     annot = annot,
     k = 100,
-    normalise = TRUE,
-    plot_path = 'plot.pdf'
+    normalise = TRUE
   )
 )
 
