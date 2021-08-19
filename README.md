@@ -23,3 +23,4 @@ Modified version written by David Novak (david.novak@ugent.be)
 
 * For the final result, the per-population distribution dissimilarities can be reduced to a scalar output value either by summing *or* by taking the average.
 
+* There is an option to produce a PDF with plots of the distributions for high-dimensional and low-dimensional coordinates for each population.
