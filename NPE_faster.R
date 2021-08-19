@@ -26,7 +26,7 @@
   dist[1, colSums(dist) == 0] <- 1
   dist <- apply(dist, 2, function(x) x / sum(x))
   
-  ## Convert to list of DiscreteDistribution objects ----
+  ## Convert to list of vectors ----
   dist <- split(dist, col(dist))
   names(dist) <- levels(annot)
   dist
