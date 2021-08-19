@@ -51,7 +51,7 @@ npe <- function(
   dist_ld <- .get_likeness_distributions(ld, annot, NULL, k, normalise) # in low dimension
   
   ## Exclude select populations ----
-  exclude <- levels(annot) %in% exclude_pops
+  exclude <- annot %in% exclude_pops
   dist_hd <- dist_hd[!exclude]
   dist_ld <- dist_ld[!exclude]
   
