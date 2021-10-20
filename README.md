@@ -13,7 +13,7 @@ Modified version written by David Novak (david.novak@ugent.be)
 
 ### Modifications
 
-* This version is faster due to extended use of built-in functions and vectorisation.
+* This version is faster due to extended use of built-in R functions and vectorisation.
 
 * Pre-computed *k*-nearest-neighbour indices in high-dimensional space can be passed as input.
 
